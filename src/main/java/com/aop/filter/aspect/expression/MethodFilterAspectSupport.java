@@ -33,7 +33,7 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
 
     private MethodFilterSource methodFilterSource;
 
-    private final Map<MethodFilterCacheKey, CacheOperationMetadata> metadataCache = new ConcurrentHashMap<>(1024);
+    private final Map<MethodFilterCacheKey, MethodFilterSourceMetadata> metadataCache = new ConcurrentHashMap<>(1024);
 
 
     @Override
@@ -57,9 +57,9 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
                 MethodFilterAttribute attribute = cacheOperationSource.getMethodMetadata(method, targetClass);
                 if (attribute != null) {
 
-                    CacheOperationMetadata metadata = getCacheOperationMetadata(attribute, method, targetClass);
+                    MethodFilterSourceMetadata metadata = getCacheOperationMetadata(attribute, method, targetClass);
 
-                    CacheOperationContext context = new CacheOperationContext(metadata,args,method);
+                    MethodFilterSourceContext context = new MethodFilterSourceContext(metadata,args,method);
 
                     if(!context.isConditionPassing()){
                         return null;
@@ -71,16 +71,16 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
     }
 
 
-    private  CacheOperationMetadata getCacheOperationMetadata(
+    private MethodFilterSourceMetadata getCacheOperationMetadata(
             MethodFilterAttribute attribute, Method method, Class<?> targetClass) {
 
         MethodFilterCacheKey cacheKey = new MethodFilterCacheKey(attribute, method, targetClass);
 
-        CacheOperationMetadata metadata = this.metadataCache.get(cacheKey);
+        MethodFilterSourceMetadata metadata = this.metadataCache.get(cacheKey);
 
         if (metadata == null) {
 
-            metadata = new CacheOperationMetadata(attribute, method, targetClass);
+            metadata = new MethodFilterSourceMetadata(attribute, method, targetClass);
             this.metadataCache.put(cacheKey, metadata);
         }
         return metadata;
@@ -97,9 +97,9 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
 
 
 
-    protected class CacheOperationContext {
+    protected class MethodFilterSourceContext {
 
-        private final CacheOperationMetadata metadata;
+        private final MethodFilterSourceMetadata metadata;
 
         private final Object[] args;
 
@@ -108,7 +108,7 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
         @Nullable
         private Boolean conditionPassing;
 
-        public CacheOperationContext(CacheOperationMetadata metadata, Object[] args, Object target) {
+        public MethodFilterSourceContext(MethodFilterSourceMetadata metadata, Object[] args, Object target) {
             this.metadata = metadata;
             this.args = extractArgs(metadata.method, args);
             this.target = target;
@@ -209,7 +209,7 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
     }
 
 
-    protected static class CacheOperationMetadata {
+    protected static class MethodFilterSourceMetadata {
 
         private final MethodFilterAttribute attribute;
 
@@ -222,7 +222,7 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
         private final AnnotatedElementKey methodKey;
 
 
-        public CacheOperationMetadata(MethodFilterAttribute attribute, Method method, Class<?> targetClass) {
+        public MethodFilterSourceMetadata(MethodFilterAttribute attribute, Method method, Class<?> targetClass) {
 
             this.attribute = attribute;
             this.method = BridgeMethodResolver.findBridgedMethod(method);
