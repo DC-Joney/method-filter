@@ -1,8 +1,10 @@
 package com.aop.filter.test;
 
 import com.aop.filter.aspect.annotation.MethodFilter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class AspectExample {
 
@@ -11,8 +13,9 @@ public class AspectExample {
         return id;
     }
 
-    @MethodFilter(condition = "@rest.test1()")
-    public Integer aspectTest1(Integer id){
+    @MethodFilter(condition = "#id < 0")
+    public Integer aspectTest1(int id){
+        log.info(id);
         return id;
     }
 }

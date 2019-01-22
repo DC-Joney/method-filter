@@ -1,6 +1,6 @@
 package com.aop.filter.aspect.annotation;
 
-import com.aop.filter.aspect.MethodFilterConfig;
+import com.aop.filter.aspect.EnableMethodFilter;
 import org.springframework.context.annotation.AdviceMode;
 import org.springframework.context.annotation.AdviceModeImportSelector;
 import org.springframework.context.annotation.AutoProxyRegistrar;
@@ -25,7 +25,6 @@ public class MethodFilterAspectRegister extends AdviceModeImportSelector<EnableM
     private String[] getProxyImports() {
         List<String> result = new ArrayList<>();
         result.add(AutoProxyRegistrar.class.getName());
-        result.add(MethodFilterConfig.class.getName());
         return result.toArray(new String[0]);
     }
 }

@@ -1,6 +1,6 @@
 package com.aop.filter;
 
-import com.aop.filter.aspect.annotation.EnableMethodFilter;
+import com.aop.filter.aspect.EnableMethodFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

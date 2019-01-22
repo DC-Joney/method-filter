@@ -1,22 +1,26 @@
 package com.aop.filter.aspect.expression;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
+import org.springframework.expression.spel.SpelCompilerMode;
+import org.springframework.expression.spel.SpelParserConfiguration;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MethodFilterExpressionEvaluator {
+public class MethodFilterExpressionEvaluator implements InitializingBean {
 
     private final SpelExpressionParser parser;
 
@@ -34,16 +38,25 @@ public class MethodFilterExpressionEvaluator {
 
     public static final String RESULT_VARIABLE = "result";
 
+    private SpelParserConfiguration configuration = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE, ClassUtils.getDefaultClassLoader());
+
 
 
     protected MethodFilterExpressionEvaluator(SpelExpressionParser parser) {
-        Assert.notNull(parser, "SpelExpressionParser must not be null");
-        this.parser = parser;
+//        Assert.notNull(parser, "SpelExpressionParser must not be null");
+        this.parser = new SpelExpressionParser(configuration);
     }
 
 
     protected MethodFilterExpressionEvaluator() {
-        this(new SpelExpressionParser());
+        this(null);
+    }
+
+
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
     }
 
     protected SpelExpressionParser getParser() {

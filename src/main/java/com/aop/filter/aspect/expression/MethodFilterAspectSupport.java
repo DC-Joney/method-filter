@@ -42,7 +42,7 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         initialized = true;
     }
 
