@@ -3,6 +3,7 @@ package com.aop.filter.aspect.expression;
 import com.aop.filter.aspect.MethodInvoker;
 import com.aop.filter.aspect.metadata.MethodFilterAttribute;
 import com.aop.filter.aspect.metadata.MethodFilterSource;
+import org.reactivestreams.Publisher;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -10,14 +11,19 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.core.BridgeMethodResolver;
+import org.springframework.core.ReactiveAdapter;
+import org.springframework.core.ReactiveAdapterRegistry;
+import org.springframework.core.ReactiveTypeDescriptor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Mono;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.springframework.aop.support.AopUtils.getTargetClass;
@@ -51,6 +57,15 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
     protected Object execute(MethodInvoker invoker, Object target, Method method, Object[] args) {
 
         if (this.initialized) {
+
+            ReactiveAdapterRegistry registry = new ReactiveAdapterRegistry();
+
+            Class<?> returnType = method.getReturnType();
+
+            if (!Optional.class.isAssignableFrom(returnType)) {
+                throw new IllegalStateException("The returnType " + returnType + " on " + method + " must return an instance of org.reactivestreams.Publisher (i.e. Mono / Flux) in order to support Reactor Context");
+            }
+
             Class<?> targetClass = getTargetClass(target);
             MethodFilterSource cacheOperationSource = getMethodFilterSource();
             if (cacheOperationSource != null) {
@@ -62,12 +77,12 @@ public class MethodFilterAspectSupport implements BeanFactoryAware, Initializing
                     MethodFilterSourceContext context = new MethodFilterSourceContext(metadata,args,method);
 
                     if(!context.isConditionPassing()){
-                        return null;
+                        return Optional.empty();
                     }
                 }
             }
         }
-        return invoker.invoke();
+        return Optional.ofNullable(invoker.invoke());
     }
 
 

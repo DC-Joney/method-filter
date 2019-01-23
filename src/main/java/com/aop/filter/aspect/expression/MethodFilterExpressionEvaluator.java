@@ -38,12 +38,10 @@ public class MethodFilterExpressionEvaluator implements InitializingBean {
 
     public static final String RESULT_VARIABLE = "result";
 
-    private SpelParserConfiguration configuration = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE, ClassUtils.getDefaultClassLoader());
-
-
 
     protected MethodFilterExpressionEvaluator(SpelExpressionParser parser) {
 //        Assert.notNull(parser, "SpelExpressionParser must not be null");
+        SpelParserConfiguration configuration = new SpelParserConfiguration(SpelCompilerMode.IMMEDIATE, ClassUtils.getDefaultClassLoader());
         this.parser = new SpelExpressionParser(configuration);
     }
 
@@ -94,6 +92,7 @@ public class MethodFilterExpressionEvaluator implements InitializingBean {
         if (beanFactory != null) {
             evaluationContext.setBeanResolver(new BeanFactoryResolver(beanFactory));
         }
+
         return evaluationContext;
     }
 

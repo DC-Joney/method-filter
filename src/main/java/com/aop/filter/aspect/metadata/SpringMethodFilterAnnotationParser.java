@@ -22,7 +22,7 @@ public class SpringMethodFilterAnnotationParser implements MethodFilterAnnotatio
 
 
     private MethodFilterAttribute parseTransactionAnnotation(AnnotationAttributes attributes) {
-        String targetFilter = attributes.getString("condition");
+        String targetFilter = attributes.getString("test");
         return new MethodFilterAttribute(targetFilter);
     }
 

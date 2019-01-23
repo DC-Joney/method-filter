@@ -27,11 +27,6 @@ public class MethodFilterInterceptor extends MethodFilterAspectSupport implement
         };
 
         try {
-
-            if(invocation.getMethod().getReturnType().isPrimitive()){
-                return invocation.proceed();
-            }
-
             return execute(methodFilterInvoker, invocation.getThis(), method, invocation.getArguments());
         }
         catch (CacheOperationInvoker.ThrowableWrapper th) {
